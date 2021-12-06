@@ -34,6 +34,7 @@ class PADDataModule(pl.LightningDataModule):
             linear_encoder: dict = None,
             prefix: str = None,
             window_len: int = 12,
+            fixed_window: bool = False,
             requires_norm: bool = True,
             return_masks: bool = False,
             clouds: bool = True,
@@ -81,6 +82,9 @@ class PADDataModule(pl.LightningDataModule):
             over the data. E.g. if `window_len` = 6 and `group_freq` = '1M', then
             a 6-month rolling window will be applied and each batch will contain
             6 months of training data and the corresponding label.
+        fixed_window: boolean, default False
+            If True, then a fixed window including months 4 (April) to 9 (September) is used
+            instead of a rolling one.
         requires_norm: boolean, default True
             If True, then it normalizes the dataset to [0, 1] range.
         return_masks: boolean, default False
@@ -126,6 +130,7 @@ class PADDataModule(pl.LightningDataModule):
         self.linear_encoder = linear_encoder
         self.saved_medians = saved_medians
         self.window_len = window_len
+        self.fixed_window = fixed_window
         self.requires_norm = requires_norm
         self.return_masks = return_masks
         self.clouds = clouds
@@ -190,6 +195,7 @@ class PADDataModule(pl.LightningDataModule):
                                                 linear_encoder=self.linear_encoder,
                                                 saved_medians=self.saved_medians,
                                                 window_len=self.window_len,
+                                                fixed_window=self.fixed_window,
                                                 requires_norm=self.requires_norm,
                                                 return_masks=self.return_masks,
                                                 clouds=self.clouds,
@@ -211,6 +217,7 @@ class PADDataModule(pl.LightningDataModule):
                                                linear_encoder=self.linear_encoder,
                                                saved_medians=self.saved_medians,
                                                window_len=self.window_len,
+                                               fixed_window=self.fixed_window,
                                                requires_norm=self.requires_norm,
                                                return_masks=self.return_masks,
                                                clouds=self.clouds,
@@ -236,6 +243,7 @@ class PADDataModule(pl.LightningDataModule):
                                                linear_encoder=self.linear_encoder,
                                                saved_medians=self.saved_medians,
                                                window_len=self.window_len,
+                                               fixed_window=self.fixed_window,
                                                requires_norm=self.requires_norm,
                                                return_masks=self.return_masks,
                                                clouds=self.clouds,

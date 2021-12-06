@@ -149,6 +149,8 @@ def main():
                              help='Starting learning rate. Default 1e-1')
     parser.add_argument('--window_len', type=int, default=6, required=False,
                              help='The length of the rolling window to be used. Default 6')
+    parser.add_argument('--fixed_window', action='store_true', default=False, required=False,
+                            help='Use a fixed window including months 4 (April) to 9 (September).')
 
     parser.add_argument('--bands', nargs='+', default=sorted(list(BANDS.keys())),
                              help='The image bands to use. Must be space separated')
@@ -388,13 +390,13 @@ def main():
             root_path_coco=root_path_coco,
             path_train=path_train,
             path_val=path_val,
-            # transforms=transforms,
             group_freq=args.group_freq,
             prefix=prefix,
             bands=args.bands,
             linear_encoder=LINEAR_ENCODER,
             saved_medians=args.saved_medians,
             window_len=args.window_len,
+            fixed_window=args.fixed_window,
             requires_norm=args.requires_norm,
             return_masks=args.return_masks,
             clouds=args.clouds,
@@ -459,6 +461,7 @@ def main():
             linear_encoder=LINEAR_ENCODER,
             saved_medians=args.saved_medians,
             window_len=args.window_len,
+            fixed_window=args.fixed_window,
             requires_norm=args.requires_norm,
             return_masks=args.return_masks,
             clouds=args.clouds,
