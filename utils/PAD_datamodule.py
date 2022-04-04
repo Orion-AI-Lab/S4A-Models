@@ -17,7 +17,7 @@ pl.seed_everything(RANDOM_SEED)
 class PADDataModule(pl.LightningDataModule):
     # Documentation: https://pytorch-lightning.readthedocs.io/en/latest/extensions/datamodules.html
     '''
-    PyTorch Lightning DataModule Wrapper for PatchesDataset
+    PyTorch Lightning DataModule Wrapper for PADDataset
     '''
 
     def __init__(
@@ -180,7 +180,7 @@ class PADDataModule(pl.LightningDataModule):
             coco_train = COCO(self.path_train)
             coco_val = COCO(self.path_val)
 
-            self.dataset_train = PatchesDataset(root_path_coco=self.root_path_coco,
+            self.dataset_train = PADDataset(root_path_coco=self.root_path_coco,
                                                 coco=coco_train,
                                                 # transforms=transforms,
                                                 group_freq=self.group_freq,
@@ -202,7 +202,7 @@ class PADDataModule(pl.LightningDataModule):
                                                 return_parcels=self.return_parcels
                                                 )
 
-            self.dataset_eval = PatchesDataset(root_path_coco=self.root_path_coco,
+            self.dataset_eval = PADDataset(root_path_coco=self.root_path_coco,
                                                coco=coco_val,
                                                group_freq=self.group_freq,
                                                compression=self.compression,
@@ -227,7 +227,7 @@ class PADDataModule(pl.LightningDataModule):
             # Setup datasets for testing
             coco_test = COCO(self.path_test)
 
-            self.dataset_test = PatchesDataset(root_path_coco=self.root_path_coco,
+            self.dataset_test = PADDataset(root_path_coco=self.root_path_coco,
                                                coco=coco_test,
                                                group_freq=self.group_freq,
                                                compression=self.compression,
