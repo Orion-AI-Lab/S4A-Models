@@ -19,7 +19,7 @@ import matplotlib.patches as mpatches
 
 from utils.tools import font_colors
 from utils.PAD_datamodule import PADDataModule
-from utils.settings.config import CROP_ENCODING, IMG_SIZE, LINEAR_ENCODER
+from utils.settings.config import CROP_ENCODING, IMG_SIZE, LINEAR_ENCODER, BANDS
 
 
 def get_window(idx, window_len, image_size, coco_file):
@@ -42,8 +42,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--model', type=str, required=True,
-                             choices=['convlstm', 'maskrcnn', 'DuPLO', 'DCGAN', 'ViT', 'tempcnn', 'convstar', 'unet'],
-                             help='Model to use. One of [\'convlstm\', \'maskrcnn\', \'DuPLO\', \'DCGAN\', \'ViT\', \'tempcnn\', \'convstar\', \'unet\']',
+                             choices=['convlstm', 'convstar', 'unet'],
+                             help='Model to use. One of [\'convlstm\', \'convstar\', \'unet\']',
                              )
 
     parser.add_argument('--image_idx', nargs='+', required=False,
@@ -152,18 +152,6 @@ if __name__ == '__main__':
                                               run_path=run_path,
                                               linear_encoder=LINEAR_ENCODER,
                                               checkpoint_epoch=checkpoint_epoch)
-    elif args.model == 'tempcnn':
-        args.img_size = (1, 1)
-        args.bands = ['B03', 'B04', 'B08']
-
-        model = TempCNN(3, n_classes, LINEAR_ENCODER, args.window_len, run_path,
-                        kernel_size=3, parcel_loss=args.parcel_loss)
-
-        # Load the model for testing
-        model = TempCNN.load_from_checkpoint(args.load_checkpoint,
-                                             map_location=torch.device('cpu'),
-                                             run_path=run_path,
-                                             linear_encoder=LINEAR_ENCODER)
     elif args.model == 'unet':
         args.img_size = [int(dim) for dim in args.img_size]
 
@@ -177,17 +165,14 @@ if __name__ == '__main__':
                                           linear_encoder=LINEAR_ENCODER,
                                           checkpoint_epoch=checkpoint_epoch,
                                           num_layers=3)
-    else:
-        print(f'{font_colors.RED}Invalid model!{font_colors.ENDC}')
-        exit(1)
 
     if args.prefix_coco is not None:
         path_test = root_path_coco / f'{args.prefix_coco}_coco_test.json'
     else:
         path_test = root_path_coco / 'coco_test.json'
 
-    # Create Data Module
-    dm = PatchesDataModule(
+    # Create Data Module for testing images
+    dm = PADDataModule(
         root_path_coco=root_path_coco,
         path_test=path_test,
         group_freq=args.group_freq,
@@ -197,11 +182,11 @@ if __name__ == '__main__':
         saved_medians=args.saved_medians,
         window_len=args.window_len,
         requires_norm=args.requires_norm,
-        return_masks=args.return_masks,
-        clouds=args.clouds,
-        cirrus=args.cirrus,
-        shadow=args.shadow,
-        snow=args.snow,
+        return_masks=False,
+        clouds=False,
+        cirrus=False,
+        shadow=False,
+        snow=False,
         output_size=args.img_size,
         batch_size=1,
         num_workers=args.num_workers,
@@ -222,7 +207,6 @@ if __name__ == '__main__':
         image_idx = [np.random.randint(0, total_images)]
     else:
         image_idx = [int(x) for x in args.image_idx]
-
 
     # Visualize results
     for image_id in image_idx:
@@ -252,8 +236,6 @@ if __name__ == '__main__':
                 b, t, c, h, w = inputs.size()
                 inputs = inputs.view(b, -1, h, w)   # (B, T * C, H, W)
                 pred = model(inputs)  # (B, K, H, W)
-            elif args.model == 'tempcnn':
-                pass
 
             pred = pred.to(torch.float32)
 
@@ -284,7 +266,20 @@ if __name__ == '__main__':
         axes[0].set_title('Label', fontdict=title_font)
         axes[1].set_title('Prediction', fontdict=title_font)
 
-        #axes[0].set_axis_off()
-        #axes[1].set_axis_off()
+        # Remove all axis labels
+        axes[0].set_xticks([])
+        axes[0].set_yticks([])
+        axes[1].set_xticks([])
+        axes[1].set_yticks([])
+
+        axes[0].spines['top'].set_visible(False)
+        axes[0].spines['right'].set_visible(False)
+        axes[0].spines['bottom'].set_visible(False)
+        axes[0].spines['left'].set_visible(False)
+
+        axes[1].spines['top'].set_visible(False)
+        axes[1].spines['right'].set_visible(False)
+        axes[1].spines['bottom'].set_visible(False)
+        axes[1].spines['left'].set_visible(False)
 
         plt.savefig(run_path / f'evaluation_of_image_{image_id}_epoch{checkpoint_epoch}.png', dpi=fig.dpi, bbox_inches='tight', pad_inches=0.5)
