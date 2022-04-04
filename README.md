@@ -1,13 +1,11 @@
-## S4A Models Main Repository
-### Institute of Astronomy, Astrophysics, Space Applications and Remote Sensing (IAASARS)
-#### National Observatory of Athens (NOA)
+## S4A Models
+#### Institute of Astronomy, Astrophysics, Space Applications and Remote Sensing (IAASARS), National Observatory of Athens (NOA)
 
-Contributors: [Sykas D.](https://github.com/dimsyk), [Zografakis D.](https://github.com/dimzog), [Sdraka M.](https://github.com/paren8esis)
+**Contributors:** [Sykas D.](https://github.com/dimsyk), [Zografakis D.](https://github.com/dimzog), [Sdraka M.](https://github.com/paren8esis)
 
+**This repository contains the models and training scripts for reproducing the experiments presented in [add publication].**
 
-This repository contains the models and training scripts for reproducing the experiments presented in [add publication] .  
-
-#### Requirements
+### Requirements
 
 This repository was tested on:
 * Python 3.8
@@ -17,10 +15,58 @@ This repository was tested on:
 
 Check `requirements.txt` for other essential modules.
 
-#### Changing Defaults
+### Available models
 
-* Configuration file `utils/settings/config.py`.
-* Custom Taxonomy Mapping at `utils/settings/mappings/mappings_{cat, fr}.py`.
+For PAD:
+1. [ConvLSTM](https://papers.nips.cc/paper/2015/file/07563a3fe3bbe7e3ba84431ad9d055af-Paper.pdf)
+2. [ConvSTAR](https://www.sciencedirect.com/science/article/pii/S0034425721003230)
+3. [U-Net](https://link.springer.com/chapter/10.1007/978-3-319-24574-4_28)
+4. [TempCNN](https://www.mdpi.com/2072-4292/11/5/523)
+
+For OAD:
+1. [TempCNN](https://www.mdpi.com/2072-4292/11/5/523)
+2. [LSTM](https://direct.mit.edu/neco/article-abstract/9/8/1735/6109/Long-Short-Term-Memory?redirectedFrom=fulltext)
+3. [Transformer](https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)
+
+### Instructions
+
+#### Folder structure
+
+```
+S4A-models\
+    L dataset\
+        L netcdf\
+        L annotations\
+        L oad\
+    L coco_files\
+    L logs\
+        L medians
+    L model\
+    L utils\
+        L settings\
+            L mappings\
+```
+
+#### Annotations
+
+In the `dataset/annotations/` folder are the annotations required for exporting the COCO files.
+
+#### NetCDF4 files
+
+In the `dataset/netcdf/` folder you should place the netCDF4 files.
+
+#### COCO files
+
+In the `coco_files/` folder are the COCO files required for training, validating and testing the models. Some proof-of-concept COCO files are also given (with the refix `poc_`) just for testing and playing around.
+
+#### OAD files
+
+In the `dataset/oad/` folder you should place the exported files containing the OAD statistics.
+
+#### Configuration
+
+* The main configuration file is `utils/settings/config.py`.
+* Custom Taxonomy Mapping is located at `utils/settings/mappings/mappings_{cat, fr}.py`.
 
 Every script inherits settings from the aforementioned files.
 
@@ -34,22 +80,9 @@ Every script inherits settings from the aforementioned files.
 - `oad_experiments.py`: The main script for training/testing the OAD models.
 - `visualize_predictions.py`: Produces a visualization of the ground truth and the prediction of a given model for a given image.
 
-#### Available models
+#### Using the repo
 
-For PAD:
-1. [ConvLSTM](https://papers.nips.cc/paper/2015/file/07563a3fe3bbe7e3ba84431ad9d055af-Paper.pdf)
-2. [ConvSTAR](https://www.sciencedirect.com/science/article/pii/S0034425721003230)
-3. [U-Net](https://link.springer.com/chapter/10.1007/978-3-319-24574-4_28)
-4. [TempCNN](https://www.mdpi.com/2072-4292/11/5/523)
-
-For OAD:
-1. [TempCNN](https://www.mdpi.com/2072-4292/11/5/523)
-2. [LSTM](https://direct.mit.edu/neco/article-abstract/9/8/1735/6109/Long-Short-Term-Memory?redirectedFrom=fulltext)
-3. [Transformer](https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)
-
-#### Instructions
-
-For PAD:
+**For PAD:**
 1. Run `export_medians_multi.py` to precompute the medians needed for training, validation and testing.
 2. Run `pad_experiments.py` with the appropriate arguments. Example:
    ```
@@ -58,10 +91,42 @@ For PAD:
    The above command is for training the **ConvLSTM** model using the **weighted parcel loss** described in the associated publication. Training will continue for **10 epochs** with **batch size 32**, using the Sentinel-2 **bands Blue (B02), Green (B03), Red (B04) and NIR (B08)**. The **input image size is 61x61**, the **precomputed medians are used** to speed up training and all input data are **normalized**. The **window length is 12**, including all months. Please use the `--help` argument to find information on all available parameters.
 3. Optionally, run `visualize_predictions.py` to visualize the image, ground truth and prediction for a specific model and image.
 
-For OAD:
+**For OAD:**
 1. Run `object-based-csv.py` to export the statistics needed for OAD.
 2. Run `oad_experiments.py` with the appropriate arguments. Example:
    ```
    python oad_experiments.py --train --model transformer --prefix <run_prefix> --file <oad_file_name> --num_epochs 10 --batch_size 32 --num_workers 16 --num_gpus 1 --hidden_size 1024 --num_layers 3
    ```
    The above command is for training the **Transformer** model. Training will continue for **10 epochs** with **batch size 32**, using given **file containing the OAD statistics**. The **hidden size is 1024** and **three layers** are used for the model. Please use the `--help` argument to find information on all available parameters.
+
+### Reported results
+
+The results reported on the given COCO files are presented in the following tables.
+
+#### PAD
+
+Scenario | Model | Acc. W. (%) | F1 W. (%) | Precision W. (%)  
+--|---|---|---|--
+1  | U-Net | 93.70  | 82.61 | 86.64
+1  | ConvLSTM  | **94.72**  | **85.18** | **86.86**
+1  | ConvSTAR | 92.78 | 80.38 | 83.33
+2  | U-Net | **83.12** | **57.85** | **61.57**
+2  | ConvLSTM | 82.53 | 56.56 | 60.57
+2  | ConvSTAR | 79.52 | 52.15 | 58.98
+3  | U-Net | **72.11** | **43.54** | **68.42**  
+3  | ConvLSTM | 69.86 | 40.47 | 66.17
+3  | ConvSTAR | 69.07 | 34.45 | 67.43
+
+#### OAD
+
+Scenario | Model | Acc. W. (%) | F1 W. (%) | Precision W. (%)  
+--|---|---|---|--
+1  | LSTM | 88.52 | 88.03 | 87.85
+1  | Transformer | 88.36  | 88.10 | 87.90
+1  | TempCNN | **90.08** | **89.97** | **90.01**
+2  | LSTM | **91.55** | **91.34** | **91.31**
+2  | Transformer | 39.17 | 31.45 | 58.52
+2  | TempCNN | 36.90 | 30.14 | 60.71
+3  | LSTM | **60.60** | **63.96** | **70.55**  
+3  | Transformer | 51.21 | 56.71 | 67.76
+3  | TempCNN | 52.32 | 57.38 | 68.35
