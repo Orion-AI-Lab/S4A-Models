@@ -55,8 +55,8 @@ if __name__ == '__main__':
     parser.add_argument('--binary_labels', action='store_true', default=False, required=False,
                              help='Map categories to 0 background, 1 parcel. Default False')
 
-    parser.add_argument('--root_path_coco', type=str, default='dataset/', required=False,
-                             help='root path until coco file')
+    parser.add_argument('--root_path_coco', type=str, default='coco_files/', required=False,
+                             help='root path until coco file. Default: "coco_files/"')
     parser.add_argument('--prefix_coco', type=str, default=None, required=False,
                              help='The prefix to use for the COCO file. Default none.')
 

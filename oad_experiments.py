@@ -168,7 +168,7 @@ def parse_args():
     parser.add_argument('--checkpoint', type=str, default=None, required=False)
     parser.add_argument('--model', type=str, required=False, choices=['lstm', 'transformer', 'tempcnn'], default='tempcnn')
     parser.add_argument('--prefix', type=str, required=False, default='exp1')
-    parser.add_argument('--file', type=str, required=False, default='dataset/data/oad/exp1_patches2000_strat_coco')
+    parser.add_argument('--file', type=str, required=False, default='dataset/oad/exp1_patches2000_strat_coco')
     parser.add_argument('--num_epochs', type=int, default=10, required=False)
     parser.add_argument('--batch_size', type=int, default=512, required=False)
     parser.add_argument('--lr', type=float, default=1e-3, required=False)

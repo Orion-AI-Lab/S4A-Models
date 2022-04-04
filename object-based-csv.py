@@ -227,7 +227,7 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--coco_path', type=str, default='exp1_patches2000_strat_coco_val.json')
-    parser.add_argument('--coco_root', type=str, default='data')
+    parser.add_argument('--coco_root', type=str, default='coco_files/')
     parser.add_argument('--save_path', type=str, default='data/oad/')
     parser.add_argument('--num_processes', type=int, default=1)
     parser.add_argument('--verbose', action='store_true', default=True, required=False)

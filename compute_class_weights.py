@@ -12,8 +12,8 @@ from utils.settings.config import CROP_ENCODING, LINEAR_ENCODER
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Computes the weights of each class.')
 
-    parser.add_argument('--coco_path', type=str, default='/home/masdra/jh-shared/S4A', required=False,
-                        help='Path of COCO files. Default "/home/masdra/NOA/SAgNet/dataset".')
+    parser.add_argument('--coco_path', type=str, default='coco_files/', required=False,
+                        help='Path of COCO files. Default "coco_files/".')
     parser.add_argument('--coco_prefix', type=str, default='exp1_patches2000_strat', required=False,
                         help='Prefix of the COCO file. Default "exp1_patches2000_strat".')
     parser.add_argument('--medians_prefix', type=str, default='exp1_patches2000_strat_61x61', required=False,

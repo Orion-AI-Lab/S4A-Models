@@ -261,8 +261,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compute and export median files for a given S2 dataset')
     parser.add_argument('--data', type=str, default='dataset/netcdf', required=False,
                         help='Path to the netCDF files. Default "dataset/netcdf/".')
-    parser.add_argument('--root_coco_path', type=str, default='dataset/', required=False,
-                        help='Root path for coco file. Default "dataset/".')
+    parser.add_argument('--root_coco_path', type=str, default='coco_files/', required=False,
+                        help='Root path for coco file. Default "coco_files/".')
     parser.add_argument('--prefix_coco', type=str, default=None, required=False,
                         help='The prefix to use for the COCO file. Default none.')
     parser.add_argument('--out_path', type=str, default='logs/medians', required=False,

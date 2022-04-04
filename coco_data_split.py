@@ -94,10 +94,10 @@ if __name__ == '__main__':
                         help='Maximum number of annotations per patch. Patches exceeding this limit, are dismissed')
     parser.add_argument('--data_path', type=str, default='dataset/netcdf/', required=False,
                         help='The path containing the data in netCDF format. Default "dataset/netcdf/".')
-    parser.add_argument('--data_ann', type=str, default='dataset/patches/', required=False,
-                        help='The path containing subfolders with the annotations files. Default "dataset/patches/".')
-    parser.add_argument('--coco_path', type=str, default='dataset/', required=False,
-                        help='The path to export the COCO files into. Default "dataset/"')
+    parser.add_argument('--data_ann', type=str, default='dataset/annotations/', required=False,
+                        help='The path containing subfolders with the annotations files. Default "dataset/annotations/".')
+    parser.add_argument('--coco_path', type=str, default='coco_files/', required=False,
+                        help='The path to export the COCO files into. Default "coco_files/"')
     parser.add_argument('--ratio', nargs='+', default=['60', '20', '20'], required=False,
                         help='The train/val/test ratio. Default is 60/20/20.')
     parser.add_argument('--prefix', type=str, default=None, required=False,
