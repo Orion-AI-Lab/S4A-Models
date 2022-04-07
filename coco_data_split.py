@@ -90,12 +90,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--how', type=str, required=True, help='Perform a stratified split.',
                         choices=['stratified', 'random'])
-    parser.add_argument('--ann_limit', type=int, required=False, default=None,
-                        help='Maximum number of annotations per patch. Patches exceeding this limit, are dismissed')
     parser.add_argument('--data_path', type=str, default='dataset/netcdf/', required=False,
                         help='The path containing the data in netCDF format. Default "dataset/netcdf/".')
-    parser.add_argument('--data_ann', type=str, default='dataset/annotations/', required=False,
-                        help='The path containing subfolders with the annotations files. Default "dataset/annotations/".')
     parser.add_argument('--coco_path', type=str, default='coco_files/', required=False,
                         help='The path to export the COCO files into. Default "coco_files/"')
     parser.add_argument('--ratio', nargs='+', default=['60', '20', '20'], required=False,
@@ -130,7 +126,6 @@ if __name__ == '__main__':
     # Define paths
     data_path = Path(args.data_path)
     coco_path = Path(args.coco_path)
-    ann_path = Path(args.data_ann)
 
     # Ignore tile/year filtering in case an explicit experiment scheme is selected
     if args.experiment is not None:
@@ -253,8 +248,6 @@ if __name__ == '__main__':
         # Export COCO files
         create_coco_dataframe(df=X_train,
                               path_coco=coco_path / f'{prefix}_coco_train.json',
-                              ann_path=ann_path,
-                              ann_limit=args.ann_limit,
                               keep_tiles=train_tiles,
                               keep_years=train_years,
                               common_labels=common_lbls
@@ -262,8 +255,6 @@ if __name__ == '__main__':
 
         create_coco_dataframe(df=X_val,
                               path_coco=coco_path / f'{prefix}_coco_val.json',
-                              ann_path=ann_path,
-                              ann_limit=args.ann_limit,
                               keep_tiles=train_tiles,
                               keep_years=train_years,
                               common_labels=common_lbls
@@ -271,8 +262,6 @@ if __name__ == '__main__':
 
         create_coco_dataframe(df=X_test,
                               path_coco=coco_path / f'{prefix}_coco_test.json',
-                              ann_path=ann_path,
-                              ann_limit=args.ann_limit,
                               keep_tiles=test_tiles,
                               keep_years=test_years,
                               common_labels=common_lbls
@@ -280,14 +269,11 @@ if __name__ == '__main__':
 
     elif args.how == 'random':
         create_coco_netcdf(netcdf_path=data_path,
-                           ann_path=ann_path,
                            path_train=coco_path / f'{prefix}_coco_train.json',
                            path_test=coco_path / f'{prefix}_coco_test.json',
                            path_val=coco_path / f'{prefix}_coco_val.json',
-                           having_annotations=False,
                            train_r=train_r,
                            val_r=val_r,
-                           ann_limit=args.ann_limit,
                            keep_tiles=args.tiles,
                            keep_years=args.years,
                            experiment=args.experiment,
