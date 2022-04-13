@@ -28,6 +28,7 @@ from utils.coco_tools import create_coco_dataframe, create_coco_netcdf
 from utils.settings.mappings.mappings_cat import SAMPLE_TILES as CAT_TILES
 from utils.settings.mappings.mappings_fr import SAMPLE_TILES as FR_TILES
 from utils.settings.mappings.encodings_en import CROP_ENCODING
+from utils.settings.config import LINEAR_ENCODER
 
 from sklearn.preprocessing import MultiLabelBinarizer
 from skmultilearn.model_selection.iterative_stratification import IterativeStratification
@@ -72,6 +73,11 @@ def create_dataframe(data_path, tiles, years, common_labels=None):
         labels = xr.open_dataset(xr.backends.NetCDF4DataStore(patch_netcdf['labels']))
 
         unique_labels = set(np.unique(labels.labels.data))
+
+        # Keep only labels contained in LINEAR_ENCODER
+        unique_labels = unique_labels & set(LINEAR_ENCODER.keys())
+
+        if (unique_labels) == 0: continue
 
         if common_labels is not None:
             # We want the train/val and test tiles to have common labels

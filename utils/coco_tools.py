@@ -83,7 +83,7 @@ def create_coco_dataframe(df, path_coco, keep_tiles='all', keep_years='all', com
                 'supercategory': 'Crop',
                 'name': crop_name,
                 'id': linear_enc[crop_id],
-            } for crop_name, crop_id in CROP_ENCODING.items()
+            } for crop_name, crop_id in CROP_ENCODING.items() if crop_id in LINEAR_ENCODER.keys()
         ]
 
     time_start = time.time()
