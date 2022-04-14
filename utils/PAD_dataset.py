@@ -54,6 +54,7 @@ class PADDataset(Dataset):
             linear_encoder: dict = None,
             prefix: str = None,
             window_len: int = 12,
+            fixed_window: bool = False,
             requires_norm: bool = True,
             return_masks: bool = False,
             clouds: bool = True,
@@ -94,6 +95,9 @@ class PADDataset(Dataset):
             over the data. E.g. if `window_len` = 6 and `group_freq` = '1M', then
             a 6-month rolling window will be applied and each batch will contain
             6 months of training data and the corresponding label.
+        fixed_window: boolean, default False
+            If True, then a fixed window including months 4 (April) to 9 (September)
+            is used instead of a rolling one.
         requires_norm: boolean, default True
             If True, then it normalizes the dataset to [0, 1] range.
         return_masks: boolean, default False
@@ -199,6 +203,7 @@ class PADDataset(Dataset):
 
         self.group_freq = group_freq
         self.window_len = window_len
+        self.fixed_window = fixed_window
         self.transforms = transforms
         self.linear_encoder = linear_encoder
 
@@ -335,14 +340,25 @@ class PADDataset(Dataset):
         Just load and return
         """
         # `medians` is a 4d numpy array (window length, bands, img_size, img_size)
-        medians = np.empty((self.window_len, self.num_bands, self.output_size[0], self.output_size[1]),
-                           dtype=self.medians_dtype)
+        if self.fixed_window:
+            medians = np.empty((6, self.num_bands, self.output_size[0], self.output_size[1]),
+                                dtype=self.medians_dtype)
+        else:
+            medians = np.empty((self.window_len, self.num_bands, self.output_size[0], self.output_size[1]),
+                                dtype=self.medians_dtype)
 
         padded_id = f'{str(subpatch_id).rjust(len(str(self.num_subpatches)), "0")}'
 
         median_files = sorted(path.glob(f'sub{padded_id}_bin*'))
 
-        for i, bin_idx in enumerate(range(start_bin, start_bin + self.window_len)):
+        if self.fixed_window:
+            start_month = 3
+            end_month = 9
+        else:
+            start_month = start_bin
+            end_month = start_bin + self.window_len
+
+        for i, bin_idx in enumerate(range(start_month, end_month)):
             median = np.load(median_files[bin_idx]).astype(self.medians_dtype)
             medians[i] = median.copy()
 

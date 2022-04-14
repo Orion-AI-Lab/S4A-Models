@@ -22,6 +22,8 @@ if __name__ == '__main__':
                         help='The prefix to use for the class weights file. Default none.')
     parser.add_argument('--ignore_zero', default=False, action='store_true', required=False,
                         help='Ignore the zero class.')
+    parser.add_argument('--fixed_window', action='store_true', default=False, required=False,
+                            help='Use a fixed window including months 4 (April) to 9 (September).')
     args = parser.parse_args()
 
     # Define paths
@@ -53,6 +55,7 @@ if __name__ == '__main__':
             linear_encoder=LINEAR_ENCODER,
             saved_medians=True,
             window_len=12,
+            fixed_window=args.fixed_window,
             requires_norm=True,
             return_masks=False,
             clouds=False,

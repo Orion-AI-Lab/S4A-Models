@@ -71,6 +71,8 @@ if __name__ == '__main__':
                                   'Check: https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases ')
     parser.add_argument('--window_len', type=int, default=6, required=False,
                              help='The length of the rolling window to be used. Default 6')
+    parser.add_argument('--fixed_window', action='store_true', default=False, required=False,
+                            help='Use a fixed window including months 4 (April) to 9 (September).')
 
     parser.add_argument('--bands', nargs='+', default=sorted(list(BANDS.keys())),
                              help='The image bands to use. Must be space separated')
@@ -181,6 +183,7 @@ if __name__ == '__main__':
         linear_encoder=LINEAR_ENCODER,
         saved_medians=args.saved_medians,
         window_len=args.window_len,
+        fixed_window=args.fixed_window,
         requires_norm=args.requires_norm,
         return_masks=False,
         clouds=False,
