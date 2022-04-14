@@ -3,7 +3,8 @@
 
 **Contributors:** [Sykas D.](https://github.com/dimsyk), [Zografakis D.](https://github.com/dimzog), [Sdraka M.](https://github.com/paren8esis)
 
-**This repository contains the models and training scripts for reproducing the experiments presented in [add publication].**
+**This repository contains the models and training scripts for reproducing the experiments presented in:**\
+[A Sentinel-2 multi-year, multi-country benchmark dataset for crop classification and segmentation with deep learning](https://ieeexplore.ieee.org/document/9749916).
 
 ### Requirements
 
@@ -130,3 +131,18 @@ Scenario | Model | Acc. W. (%) | F1 W. (%) | Precision W. (%)
 3  | LSTM | **60.60** | **63.96** | **70.55**  
 3  | Transformer | 51.21 | 56.71 | 67.76
 3  | TempCNN | 52.32 | 57.38 | 68.35
+
+### Citation
+
+If you use our work, please cite:
+
+```
+@ARTICLE{
+  9749916,
+  author={Sykas, Dimitrios and Sdraka, Maria and Zografakis, Dimitrios and Papoutsis, Ioannis},
+  journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing},
+  title={A Sentinel-2 multi-year, multi-country benchmark dataset for crop classification and segmentation with deep learning},
+  year={2022},
+  doi={10.1109/JSTARS.2022.3164771}
+}
+```
