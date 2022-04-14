@@ -18,7 +18,6 @@ import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.plugins import DDPPlugin
-from pytorch_lightning.plugins.precision.native_amp import NativeMixedPrecisionPlugin
 import torch
 
 from utils.PAD_datamodule import PADDataModule
@@ -428,7 +427,6 @@ def main():
         tb_logger = pl_loggers.TensorBoardLogger(run_path / 'tensorboard')
 
         my_ddp = DDPPlugin(find_unused_parameters=True)
-        mixed_precision = NativeMixedPrecisionPlugin()
 
         trainer = pl.Trainer(gpus=args.num_gpus,
                              num_nodes=args.num_nodes,
@@ -445,7 +443,7 @@ def main():
                              resume_from_checkpoint=resume_from_checkpoint,
                              fast_dev_run=args.devtest,
                              distributed_backend='ddp' if args.num_gpus > 1 else None,
-                             plugins=[my_ddp, mixed_precision],
+                             plugins=[my_ddp],
                              deterministic=True
                              )
 
