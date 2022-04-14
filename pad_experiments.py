@@ -385,7 +385,7 @@ def main():
 
     if args.train:
         # Create Data Modules
-        dm = PatchesDataModule(
+        dm = PADDataModule(
             root_path_coco=root_path_coco,
             path_train=path_train,
             path_val=path_val,
@@ -454,7 +454,7 @@ def main():
         trainer.fit(model, datamodule=dm)
     else:
         # Create Data Module
-        dm = PatchesDataModule(
+        dm = PADDataModule(
             root_path_coco=root_path_coco,
             path_test=path_test,
             group_freq=args.group_freq,
