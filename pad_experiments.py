@@ -443,8 +443,7 @@ def main():
                              resume_from_checkpoint=resume_from_checkpoint,
                              fast_dev_run=args.devtest,
                              strategy='ddp' if args.num_gpus > 1 else None,
-                             plugins=[my_ddp],
-                             deterministic=True
+                             plugins=[my_ddp]
                              )
 
         # Train model
@@ -486,8 +485,7 @@ def main():
                              max_epochs=2,
                              precision=32,
                              strategy='ddp' if args.num_gpus > 1 else None,
-                             plugins=[my_ddp],
-                             deterministic=True
+                             plugins=[my_ddp]
                              )
 
         # Test model
