@@ -442,7 +442,7 @@ def main():
                              checkpoint_callback=True,
                              resume_from_checkpoint=resume_from_checkpoint,
                              fast_dev_run=args.devtest,
-                             distributed_backend='ddp' if args.num_gpus > 1 else None,
+                             strategy='ddp' if args.num_gpus > 1 else None,
                              plugins=[my_ddp],
                              deterministic=True
                              )
@@ -485,7 +485,7 @@ def main():
                              min_epochs=1,
                              max_epochs=2,
                              precision=32,
-                             distributed_backend='ddp' if args.num_gpus > 1 else None,
+                             strategy='ddp' if args.num_gpus > 1 else None,
                              plugins=[my_ddp],
                              deterministic=True
                              )
