@@ -39,8 +39,7 @@ def init_coco():
     return coco_out
 
 
-def create_coco_dataframe(df, path_coco, ann_path, ann_limit=None,
-                          keep_tiles='all', keep_years='all', common_labels=None):
+def create_coco_dataframe(df, path_coco, keep_tiles='all', keep_years='all', common_labels=None):
     '''
     Creates and exports a COCO file with the data provided in a given dataframe.
 
@@ -50,11 +49,6 @@ def create_coco_dataframe(df, path_coco, ann_path, ann_limit=None,
         A pandas dataframe containing the paths of the data.
     path_coco: str or Path
         The file path to export COCO file into.
-    ann_path: str or Path
-        The path containing the annotations of the data. Folder structure in this
-        path should be: `ann_path/<year>/<tile>/<patch>/`
-    ann_limit: int. Default None.
-        Upper annotation limit, patches that exceed it are dismissed
     keep_tiles: list of str, default 'all'
         The tiles to use for train/val/test. Default 'all'.
     keep_years: list of str, default 'all'
@@ -63,10 +57,9 @@ def create_coco_dataframe(df, path_coco, ann_path, ann_limit=None,
         The common labels of the selected tiles.
     '''
     path_coco = Path(path_coco)
-    ann_path = Path(ann_path)
 
     # Initializations
-    annotation_id, image_id = 1, 1
+    image_id = 1
     coco = init_coco()
 
     if common_labels is not None:
@@ -90,7 +83,7 @@ def create_coco_dataframe(df, path_coco, ann_path, ann_limit=None,
                 'supercategory': 'Crop',
                 'name': crop_name,
                 'id': linear_enc[crop_id],
-            } for crop_name, crop_id in CROP_ENCODING.items()
+            } for crop_name, crop_id in CROP_ENCODING.items() if crop_id in LINEAR_ENCODER.keys()
         ]
 
     time_start = time.time()
@@ -103,35 +96,6 @@ def create_coco_dataframe(df, path_coco, ann_path, ann_limit=None,
 
         # Check against parsed tiles/years
         if not keep_tile(tile, year, keep_tiles, keep_years): continue
-
-        if not Path(ann_path / year / tile / patch / 'annotations.csv.gz').is_file():
-            print(f'Skipping: "{path}", no annotations!')
-            continue
-
-        # Read annotations and insert them into COCO
-        df = pd.read_csv(
-            ann_path / year / tile / patch / 'annotations.csv.gz',
-            converters={'segmentation': ast.literal_eval, 'bbox': ast.literal_eval}
-        )
-
-        # If annotations limit is passed as a parameter,
-        # ignore dataframes that contain more entries than ann_limit
-        if ann_limit is not None:
-            if len(df) > ann_limit:
-                print(f'Skipping: "{path}", {len(df)} annos!')
-                continue
-
-        for row in df.itertuples(index=False):
-            coco['annotations'].append({
-                'id': annotation_id,
-                'iscrowd': 0,
-                'image_id': image_id,
-                'category_id': linear_enc[row.Crop_type],
-                'segmentation': row.segmentation,
-                'bbox': row.bbox,
-                'area': row.area
-            })
-            annotation_id += 1
 
         # file_name: should be current netcdf name and parent folder
         file_name = Path(path.parts[-2]) / path.parts[-1]
@@ -153,17 +117,14 @@ def create_coco_dataframe(df, path_coco, ann_path, ann_limit=None,
         json.dump(coco, file)
 
 
-def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
-                       having_annotations=False, train_r=60, val_r=30, ann_limit=None,
+def create_coco_netcdf(netcdf_path, path_train, path_test, path_val, train_r=60, val_r=30,
                        keep_tiles='all', keep_years='all', experiment=None,
                        train_tiles=None, test_tiles=None, train_years=None, test_years=None,
                        common_labels=None, num_patches=None):
-    print(f'Creating Coco Attribute file..')
     netcdf_path = Path(netcdf_path)
-    ann_path = Path(ann_path)
 
     # Initializations
-    annotation_id, image_id = 1, 1
+    image_id = 1
     coco = init_coco()
 
     if common_labels is not None:
@@ -181,7 +142,7 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
 
         if experiment in [2, 3]:
             coco_test = init_coco()
-            test_annotation_id, test_image_id = 1, 1
+            test_image_id = 1
 
             coco_test['categories'] = [
                 {
@@ -199,11 +160,10 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
                 'supercategory': 'Crop',
                 'name': crop_name,
                 'id': linear_enc[crop_id],
-            } for crop_name, crop_id in CROP_ENCODING.items()
+            } for crop_name, crop_id in CROP_ENCODING.items() if crop_id in linear_enc.keys()
         ]
 
     print(f'\nReading Netcdfs from: "{netcdf_path}".')
-    print(f'Reading Annotations from: "{ann_path}".')
     time_start = time.time()
 
     for path in netcdf_path.rglob('*.nc'):
@@ -214,73 +174,33 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
         # Check against parsed tiles/years
         if (experiment is None) and not keep_tile(tile, year, keep_tiles, keep_years): continue
 
-        if not Path(ann_path / year / tile / patch / 'annotations.csv.gz').is_file():
-            print(f'Skipping: "{path}", no annotations!')
-            continue
-
-        df = pd.read_csv(
-            ann_path / year / tile / patch / 'annotations.csv.gz',
-            converters={'segmentation': ast.literal_eval, 'bbox': ast.literal_eval}
-        )
-
-        # If annotations limit is passed as a parameter,
-        # ignore dataframes that contain more entries than ann_limit
-        if ann_limit is not None:
-            if len(df) > ann_limit:
-                print(f'Skipping: "{path}", {len(df)} annos!')
-                continue
-
         if (experiment not in [2, 3]) or \
             ((experiment in [2, 3]) and ((tile in train_tiles) and (year in train_years))):
-                for row in df.itertuples(index=False):
-                    coco['annotations'].append({
-                        'id': annotation_id,
-                        'iscrowd': 0,
-                        'image_id': image_id,
-                        'category_id': linear_enc[row.Crop_type],
-                        'segmentation': row.segmentation,
-                        'bbox': row.bbox,
-                        'area': row.area
-                    })
-                    annotation_id += 1
-
-                    # file_name: should be current netcdf name and parent folder
-                    file_name = Path(path.parts[-2]) / path.parts[-1]
-                    coco['images'].append({
-                        'license': 1,
-                        'file_name': str(file_name),
-                        'height': IMG_SIZE,
-                        'width': IMG_SIZE,
-                        'date_captured': year,
-                        'id': image_id
-                    })
-
-                    image_id += 1
-        elif (tile in test_tiles) and (year in test_years):
-            for row in df.itertuples(index=False):
-                coco_test['annotations'].append({
-                    'id': test_annotation_id,
-                    'iscrowd': 0,
-                    'image_id': test_image_id,
-                    'category_id': linear_enc[row.Crop_type],
-                    'segmentation': row.segmentation,
-                    'bbox': row.bbox,
-                    'area': row.area
-                })
-                test_annotation_id += 1
-
                 # file_name: should be current netcdf name and parent folder
                 file_name = Path(path.parts[-2]) / path.parts[-1]
-                coco_test['images'].append({
+                coco['images'].append({
                     'license': 1,
                     'file_name': str(file_name),
                     'height': IMG_SIZE,
                     'width': IMG_SIZE,
                     'date_captured': year,
-                    'id': test_image_id
+                    'id': image_id
                 })
 
-                test_image_id += 1
+                image_id += 1
+        elif (tile in test_tiles) and (year in test_years):
+            # file_name: should be current netcdf name and parent folder
+            file_name = Path(path.parts[-2]) / path.parts[-1]
+            coco_test['images'].append({
+                'license': 1,
+                'file_name': str(file_name),
+                'height': IMG_SIZE,
+                'width': IMG_SIZE,
+                'date_captured': year,
+                'id': test_image_id
+            })
+
+            test_image_id += 1
 
     print(f'Done. Time Elapsed: {(time.time() - time_start) / 60:0.2f} min(s).')
 
@@ -295,17 +215,14 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
 
         coco_train, coco_val = split_coco(coco,
                                           train_size=new_train_r / 100,
-                                          random_state=RANDOM_SEED,
-                                          having_annotations=having_annotations
-                                          )
+                                          random_state=RANDOM_SEED)
 
         if num_patches is not None:
             new_val_r = (num_patches * val_r) / len(coco_val['images'])
 
             coco_val, _ = split_coco(coco_val,
                                      train_size=new_val_r / 100,
-                                     random_state=RANDOM_SEED,
-                                     having_annotations=having_annotations)
+                                     random_state=RANDOM_SEED)
 
         # Randomly select samples from test COCO
         if num_patches is None:
@@ -315,8 +232,7 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
 
         coco_test, _ = split_coco(coco_test,
                                   train_size=new_test_r / 100,
-                                  random_state=RANDOM_SEED,
-                                  having_annotations=having_annotations)
+                                  random_state=RANDOM_SEED)
     else:
         # Split big COCO into train/test
         if num_patches is None:
@@ -327,9 +243,7 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
 
         coco_train, coco_val_test = split_coco(coco,
                                                train_size=new_train_r / 100,
-                                               random_state=RANDOM_SEED,
-                                               having_annotations=having_annotations
-                                               )
+                                               random_state=RANDOM_SEED)
         # Split val_test to val/test
         if num_patches is None:
             new_val_r = val_r / (100 - train_r) * 100
@@ -338,16 +252,13 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
 
         coco_val, coco_test = split_coco(coco_val_test,
                                          train_size=new_val_r / 100,
-                                         random_state=RANDOM_SEED,
-                                         having_annotations=having_annotations
-                                         )
+                                         random_state=RANDOM_SEED)
         if num_patches is not None:
             new_test_r = ((100 - train_r - val_r) * num_patches) / len(coco_test['images'])
 
             coco_test, _ = split_coco(coco_test,
                                       train_size=new_test_r / 100,
-                                      random_state=RANDOM_SEED,
-                                      having_annotations=having_annotations)
+                                      random_state=RANDOM_SEED)
 
     # Dump them to disk
     print('Saving to disk...')
@@ -362,26 +273,20 @@ def create_coco_netcdf(netcdf_path, ann_path, path_train, path_test, path_val,
         json.dump(coco_test, file)
 
 
-def split_coco(coco, train_size=0.9, having_annotations=False, random_state=0):
+def split_coco(coco, train_size=0.9, random_state=0):
     assert isinstance(coco, dict), f'Split Coco: given file is not in dict format'
 
     info = coco['info']
     licenses = coco['licenses']
     images = sorted(coco['images'], key=lambda img: img['id'])
-    annotations = sorted(coco['annotations'], key=lambda ann: ann['image_id'])
     categories = coco['categories']
 
-    if having_annotations:
-        images_with_annotations = funcy.lmap(lambda a: int(a['image_id']), annotations)
-        images = funcy.lremove(lambda i: i['id'] not in images_with_annotations, images)
-
-    images_x, images_y, annotations_x, annotations_y = train_test_split(images, annotations, train_size=train_size, random_state=random_state)
+    images_x, images_y, _, _ = train_test_split(images, range(0, len(images)), train_size=train_size, random_state=random_state)
 
     x = {
         'info': info,
         'licenses': licenses,
         'images': images_x,
-        'annotations': annotations_x,
         'categories': categories
     }
 
@@ -389,7 +294,6 @@ def split_coco(coco, train_size=0.9, having_annotations=False, random_state=0):
         'info': info,
         'licenses': licenses,
         'images': images_y,
-        'annotations': annotations_y,
         'categories': categories
     }
 

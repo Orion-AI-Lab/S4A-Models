@@ -328,11 +328,6 @@ class PADDataset(Dataset):
         return labels
 
 
-    def get_annotations(self, coco: COCO) -> dict:
-        # https://medium.com/fullstackai/how-to-train-an-object-detector-with-your-own-coco-dataset-in-pytorch-319e7090da5
-        raise NotImplementedError('')
-
-
     def load_medians(self, path: Path, subpatch_id: int, start_bin: int) -> Tuple[np.ndarray, np.ndarray]:
         """
         Loads precomputed medians for requested path.
