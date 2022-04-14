@@ -5,7 +5,7 @@ and/or in test mode, and exports the results.
 In order to be used as model inputs, the training data are further split into
 sequences using a rolling window of a fixed size.
 '''
-import argparsse
+import argparse
 from pathlib import Path
 from datetime import datetime
 
