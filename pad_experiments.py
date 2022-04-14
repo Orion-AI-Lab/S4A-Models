@@ -23,7 +23,7 @@ import torch
 
 from utils.PAD_datamodule import PADDataModule
 from utils.tools import font_colors
-from utils.settings.config import RANDOM_SEED, CROP_ENCODING, LINEAR_ENCODER, CLASS_WEIGHTS
+from utils.settings.config import RANDOM_SEED, CROP_ENCODING, LINEAR_ENCODER, CLASS_WEIGHTS, BANDS
 
 # Set seed for everything
 pl.seed_everything(RANDOM_SEED)
