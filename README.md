@@ -36,7 +36,6 @@ For OAD:
 S4A-models\
     L dataset\
         L netcdf\
-        L annotations\
         L oad\
     L coco_files\
     L logs\
@@ -47,17 +46,13 @@ S4A-models\
             L mappings\
 ```
 
-#### Annotations
+#### COCO files
 
-In the `dataset/annotations/` folder are the annotations required for exporting the COCO files.
+In the `coco_files/` folder are the COCO files required for training, validating and testing the models. Some proof-of-concept COCO files are also given (with the refix `poc_`) just for testing and playing around.
 
 #### NetCDF4 files
 
 In the `dataset/netcdf/` folder you should place the netCDF4 files.
-
-#### COCO files
-
-In the `coco_files/` folder are the COCO files required for training, validating and testing the models. Some proof-of-concept COCO files are also given (with the refix `poc_`) just for testing and playing around.
 
 #### OAD files
 
@@ -72,13 +67,13 @@ Every script inherits settings from the aforementioned files.
 
 #### Essential scripts
 
-- `coco_data_split.py`: Uses the nectCDF4 data and the annotations to produce three COCO files for training, validation and testing.
-- `export_medians_multi.py`: Uses the netCDF4 data and the COCO files to compute the median image per month.
+- `coco_data_split.py`: Uses the nectCDF4 data to produce three COCO files for training, validation and testing.
+- `export_medians_multi.py`: Uses the netCDF4 data and the COCO files to compute the median image per month and export them to the disk.
 - `compute_class_weights.py`: Computes the class weights based on the exported medians, to account for class imbalance.
 - `object-based-csv.py`: Uses the netCDF4 data to compute the statistics required for OAD.
 - `pad_experiments.py`: The main script for training/testing the PAD models.
 - `oad_experiments.py`: The main script for training/testing the OAD models.
-- `visualize_predictions.py`: Produces a visualization of the ground truth and the prediction of a given model for a given image.
+- `visualize_predictions.py`: Produces a visualization of the ground truth and the prediction of a given model for a given image. Only relevant for PAD models.
 
 #### Using the repo
 
@@ -95,7 +90,7 @@ Every script inherits settings from the aforementioned files.
    python pad_experiments.py --train --model convlstm --parcel_loss --weighted_loss --root_path_coco <coco_folder_path> --prefix_coco <coco_file_prefix> --prefix <run_prefix> --num_epochs 10 --batch_size 32 --bands B02 B03 B04 B08 --saved_medians --img_size 61 61 --requires_norm --num_workers 16 --num_gpus 1 --window_len 12
    ```
    The above command is for training the **ConvLSTM** model using the **weighted parcel loss** described in the associated publication. Training will continue for **10 epochs** with **batch size 32**, using the Sentinel-2 **bands Blue (B02), Green (B03), Red (B04) and NIR (B08)**. The **input image size is 61x61**, the **precomputed medians are used** to speed up training and all input data are **normalized**. The **window length is 12**, including all months. Please use the `--help` argument to find information on all available parameters.
-2. Optionally, run `visualize_predictions.py` to visualize the image, ground truth and prediction for a specific model and image.
+2. Optionally, after training run `visualize_predictions.py` to visualize the image, ground truth and prediction for a specific model and image.
 
 **For OAD:**
 1. Run `oad_experiments.py` with the appropriate arguments. Example:
