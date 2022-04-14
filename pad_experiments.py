@@ -421,7 +421,6 @@ def main():
                 dirpath=run_path / 'checkpoints',
                 monitor=monitor,
                 mode='min',
-                period=1,
                 save_top_k=-1
             )
         )
