@@ -82,15 +82,14 @@ Every script inherits settings from the aforementioned files.
 1. Run `export_medians_multi.py` to precompute the medians needed for training, validation and testing.
 2. If you don't want to use the given COCO files, then export your own using the `coco_data_split.py` script.
 3. Uncomment the precomputed class weights in the corresponding section of the configuration file depending on the scenario you are using (or compute your own).
-4. If you want to use a fixed window containing the months April through September, check out the branch `use_fixed_window`.
-5. Especially for OAD, run `object-based-csv.py` to export the statistics needed for the experiments.
+4. Especially for OAD, run `object-based-csv.py` to export the statistics needed for the experiments.
 
 **For PAD:**
 1. Run `pad_experiments.py` with the appropriate arguments. Example:
    ```
-   python pad_experiments.py --train --model convlstm --parcel_loss --weighted_loss --root_path_coco <coco_folder_path> --prefix_coco <coco_file_prefix> --prefix <run_prefix> --num_epochs 10 --batch_size 32 --bands B02 B03 B04 B08 --saved_medians --img_size 61 61 --requires_norm --num_workers 16 --num_gpus 1 --window_len 12
+   python pad_experiments.py --train --model convlstm --parcel_loss --weighted_loss --root_path_coco <coco_folder_path> --prefix_coco <coco_file_prefix> --prefix <run_prefix> --num_epochs 10 --batch_size 32 --bands B02 B03 B04 B08 --saved_medians --img_size 61 61 --requires_norm --num_workers 16 --num_gpus 1 --fixed_window
    ```
-   The above command is for training the **ConvLSTM** model using the **weighted parcel loss** described in the associated publication. Training will continue for **10 epochs** with **batch size 32**, using the Sentinel-2 **bands Blue (B02), Green (B03), Red (B04) and NIR (B08)**. The **input image size is 61x61**, the **precomputed medians are used** to speed up training and all input data are **normalized**. The **window length is 12**, including all months. Please use the `--help` argument to find information on all available parameters.
+   The above command is for training the **ConvLSTM** model using the **weighted parcel loss** described in the associated publication. Training will continue for **10 epochs** with **batch size 32**, using the Sentinel-2 **bands Blue (B02), Green (B03), Red (B04) and NIR (B08)**. The **input image size is 61x61**, the **precomputed medians are used** to speed up training and all input data are **normalized**. Finally, a **fixed window** is used containing months 4 (April) through 9 (September). Please use the `--help` argument to find information on all available parameters.
 2. Optionally, after training run `visualize_predictions.py` to visualize the image, ground truth and prediction for a specific model and image.
 
 **For OAD:**
