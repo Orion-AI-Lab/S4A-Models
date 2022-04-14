@@ -6,10 +6,10 @@ from numpy.lib.stride_tricks import sliding_window_view
 from mpl_toolkits.axes_grid1 import ImageGrid
 from pycocotools.coco import COCO
 
-from model.convLSTM_lightning import ConvLSTM
-from model.tempCNN_lightning import TempCNN
-from model.convSTAR_lightning import ConvSTAR
-from model.unet_lightning import UNet
+from model.PAD_convLSTM import ConvLSTM
+from model.PAD_tempCNN import TempCNN
+from model.PAD_convSTAR import ConvSTAR
+from model.PAD_unet import UNet
 
 import pytorch_lightning as pl
 import torch

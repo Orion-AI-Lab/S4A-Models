@@ -10,9 +10,9 @@
 
 This repository was tested on:
 * Python 3.8
-* CUDA 11.2
-* PyTorch 1.8.1
-* PyTorch Lightning 1.2.1
+* CUDA 11.4
+* PyTorch 1.11
+* PyTorch Lightning 1.6
 
 Check `requirements.txt` for other essential modules.
 

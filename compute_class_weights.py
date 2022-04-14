@@ -5,7 +5,7 @@ import pickle
 
 from pycocotools.coco import COCO
 
-from utils.patches_datamodule import PatchesDataModule
+from utils.PAD_datamodule import PADDataModule
 from utils.settings.config import CROP_ENCODING, LINEAR_ENCODER
 
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         class_pixel_counts = pickle.load(open(pixel_cnts_name, 'rb'))
     else:
         # Create Data Module
-        dm = PatchesDataModule(
+        dm = PADDataModule(
             root_path_coco=root_path_coco,
             path_train=coco_train,
             path_val=coco_val,

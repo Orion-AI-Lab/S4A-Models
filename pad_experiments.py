@@ -5,7 +5,7 @@ and/or in test mode, and exports the results.
 In order to be used as model inputs, the training data are further split into
 sequences using a rolling window of a fixed size.
 '''
-import argparsse
+import argparse
 from pathlib import Path
 from datetime import datetime
 
@@ -18,12 +18,11 @@ import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.plugins import DDPPlugin
-from pytorch_lightning.plugins.precision.native_amp import NativeMixedPrecisionPlugin
 import torch
 
 from utils.PAD_datamodule import PADDataModule
 from utils.tools import font_colors
-from utils.settings.config import RANDOM_SEED, CROP_ENCODING, LINEAR_ENCODER, CLASS_WEIGHTS
+from utils.settings.config import RANDOM_SEED, CROP_ENCODING, LINEAR_ENCODER, CLASS_WEIGHTS, BANDS
 
 # Set seed for everything
 pl.seed_everything(RANDOM_SEED)
@@ -385,7 +384,7 @@ def main():
 
     if args.train:
         # Create Data Modules
-        dm = PatchesDataModule(
+        dm = PADDataModule(
             root_path_coco=root_path_coco,
             path_train=path_train,
             path_val=path_val,
@@ -421,7 +420,6 @@ def main():
                 dirpath=run_path / 'checkpoints',
                 monitor=monitor,
                 mode='min',
-                period=1,
                 save_top_k=-1
             )
         )
@@ -429,7 +427,6 @@ def main():
         tb_logger = pl_loggers.TensorBoardLogger(run_path / 'tensorboard')
 
         my_ddp = DDPPlugin(find_unused_parameters=True)
-        mixed_precision = NativeMixedPrecisionPlugin()
 
         trainer = pl.Trainer(gpus=args.num_gpus,
                              num_nodes=args.num_nodes,
@@ -445,16 +442,15 @@ def main():
                              checkpoint_callback=True,
                              resume_from_checkpoint=resume_from_checkpoint,
                              fast_dev_run=args.devtest,
-                             distributed_backend='ddp' if args.num_gpus > 1 else None,
-                             plugins=[my_ddp, mixed_precision],
-                             deterministic=True
+                             strategy='ddp' if args.num_gpus > 1 else None,
+                             plugins=[my_ddp]
                              )
 
         # Train model
         trainer.fit(model, datamodule=dm)
     else:
         # Create Data Module
-        dm = PatchesDataModule(
+        dm = PADDataModule(
             root_path_coco=root_path_coco,
             path_test=path_test,
             group_freq=args.group_freq,
@@ -488,9 +484,8 @@ def main():
                              min_epochs=1,
                              max_epochs=2,
                              precision=32,
-                             distributed_backend='ddp' if args.num_gpus > 1 else None,
-                             plugins=[my_ddp],
-                             deterministic=True
+                             strategy='ddp' if args.num_gpus > 1 else None,
+                             plugins=[my_ddp]
                              )
 
         # Test model
