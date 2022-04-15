@@ -6,6 +6,22 @@
 **This repository contains the models and training scripts for reproducing the experiments presented in:**\
 [A Sentinel-2 multi-year, multi-country benchmark dataset for crop classification and segmentation with deep learning](https://ieeexplore.ieee.org/document/9749916).
 
+### Description
+
+Based on the Sen4AgriNet dataset, we produce two distinct sub-datasets of Sentinel-2 L1C images for experimentation:
+- **Patches Assembled Dataset (PAD)**: all Sentinel-2 images expanding over 2 years (2019, 2020) and 2 regions (France, Catalonia) with pixel-wise labels for crop classification (overall 168 classes).
+- **Object Aggregated Dataset (OAD)**: on top of PAD, the mean and std of each parcel is computed for each Sentinel-2 observation and used as input data. A single label for each parcel is used.
+
+The above sub-datasets were downsized in order to be used for the experiments in this repository. Specifically, 5000 patches with 60-20-20 (train-val-test) split were sampled from each sub-dataset and the 11 most frequent classes were kept (*wheat*, *maize*, *sorghum*, *barley*, *rye*, *oats*, *grapes*, *rapeseed*, *sunflower*, *potatoes*, *peas*). Three different scenarios were explored:
+
+Scenario | Train | Test
+--|---|---
+1  | Catalonia (2019, 2020), France (2019) | Catalonia (2019, 2020), France (2019)
+2  | Catalonia (2019, 2020) | France (2019)
+3  | France (2019) | Catalonia (2020)
+
+The input of the PAD models is the median of each month of observations from April through September. The OAD models take as input the aggregated statistics of these observations.
+
 ### Requirements
 
 This repository was tested on:
