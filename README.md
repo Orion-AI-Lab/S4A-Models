@@ -65,7 +65,7 @@ S4A-models\
 
 #### COCO files
 
-In the `coco_files/` folder are the COCO files required for training, validating and testing the models. Some proof-of-concept COCO files are also given (with the refix `poc_`) just for testing and playing around.
+In the `coco_files/` folder are the COCO files required for training, validating and testing the models.
 
 #### NetCDF4 files
 
