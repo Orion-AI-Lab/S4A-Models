@@ -69,7 +69,7 @@ In the `coco_files/` folder are the COCO files required for training, validating
 
 #### NetCDF4 files
 
-In the `dataset/netcdf/` folder you should place the netCDF4 files.
+In the `dataset/netcdf/` folder you should place the netCDF4 files downloaded from the provided [Dropbox](https://www.dropbox.com/sh/2arxz9d7fffg0xb/AADqlPtOoo4aCYAtmo2XzN5ta/netcdf?dl=0&subfolder_nav_tracking=1).
 
 #### OAD files
 
