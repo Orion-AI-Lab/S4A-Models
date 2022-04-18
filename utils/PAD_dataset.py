@@ -45,7 +45,7 @@ class PADDataset(Dataset):
     def __init__(
             self,
             coco: COCO,
-            root_path_coco: Union[str, Path] = None,
+            root_path_netcdf:  Union[str, Path] = None,
             bands: list = None,
             transforms=None,
             compression: str = 'gzip',
@@ -71,6 +71,8 @@ class PADDataset(Dataset):
         ----------
         coco: COCO Object
             A COCO object containing the data.
+        root_path_netcdf: Path or str, default None
+            The path containing the netcdf files.
         bands: list of str, default None
             A list of the bands to use. If None, then all available bands are
             taken into consideration. Note that the bands are given in a two-digit
@@ -130,8 +132,10 @@ class PADDataset(Dataset):
         self.coco = coco
         self.patch_ids = list(sorted(self.coco.imgs.keys()))
 
-        # Base root path, pointing to coco instance
-        self.root_path_coco = Path(root_path_coco)
+        if root_path_netcdf is not None:
+            self.root_path_netcdf = Path(root_path_netcdf)
+        else:
+            self.root_path_netcdf = None
 
         # number of total patches is given by number of patches in coco
         self.num_patches = len(self.patch_ids)
@@ -418,7 +422,7 @@ class PADDataset(Dataset):
             medians, labels = self.load_medians(block_dir, subpatch_id, start_bin)
         else:
             # Find patch in COCO file
-            patch = self.root_path_coco / self.coco.loadImgs(patch_id)[0]['file_name']
+            patch = self.root_path_netcdf / self.coco.loadImgs(patch_id)[0]['file_name']
 
             # Load patch netcdf4
             patch_netcdf = netCDF4.Dataset(patch, 'r')
