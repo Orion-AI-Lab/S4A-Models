@@ -97,7 +97,7 @@ Every script inherits settings from the aforementioned files.
 #### Using the repo
 
 **Preparation**
-1. Run `export_medians_multi.py` to precompute the medians needed for training, validation and testing.
+1. (Optional) Run `export_medians_multi.py` to precompute the medians needed for training, validation and testing.
 2. If you don't want to use the given COCO files, then export your own using the `coco_data_split.py` script.
 3. Uncomment the precomputed class weights in the corresponding section of the configuration file depending on the scenario you are using (or compute your own).
 4. Especially for OAD, run `object-based-csv.py` to export the statistics needed for the experiments.
