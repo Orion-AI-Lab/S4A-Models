@@ -1,5 +1,4 @@
-## S4A Models
-#### Institute of Astronomy, Astrophysics, Space Applications and Remote Sensing (IAASARS), National Observatory of Athens (NOA)
+## Sen4AgriNet Models
 
 **Contributors:** [Sykas D.](https://github.com/dimsyk), [Zografakis D.](https://github.com/dimzog), [Sdraka M.](https://github.com/paren8esis)
 
@@ -21,6 +20,8 @@ Scenario | Train | Test
 3  | France (2019) | Catalonia (2020)
 
 The input of the PAD models is the median of each month of observations from April through September. The OAD models take as input the aggregated statistics of these observations.
+
+For a full reproduction of the experiments presented in the associated publication, please download the COCO and netCDF files from [this](https://www.dropbox.com/sh/mo02inemclhyeuy/AAAcNxHY75hb4c8oaxI-4Y_ba?dl=0) Dropbox folder. In the same folder you can also find the weights of the trained models.
 
 ### Requirements
 
@@ -95,7 +96,7 @@ Every script inherits settings from the aforementioned files.
 #### Using the repo
 
 **Preparation**
-1. Run `export_medians_multi.py` to precompute the medians needed for training, validation and testing.
+1. (Optional) Run `export_medians_multi.py` to precompute the medians needed for training, validation and testing.
 2. If you don't want to use the given COCO files, then export your own using the `coco_data_split.py` script.
 3. Uncomment the precomputed class weights in the corresponding section of the configuration file depending on the scenario you are using (or compute your own).
 4. Especially for OAD, run `object-based-csv.py` to export the statistics needed for the experiments.
