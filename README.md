@@ -21,7 +21,7 @@ Scenario | Train | Test
 
 The input of the PAD models is the median of each month of observations from April through September. The OAD models take as input the aggregated statistics of these observations.
 
-For a full reproduction of the experiments presented in the associated publication, please download the COCO and netCDF files from [this](https://www.dropbox.com/sh/mo02inemclhyeuy/AAAcNxHY75hb4c8oaxI-4Y_ba?dl=0) Dropbox folder. In the same folder you can also find the trained weights of the models.
+For a full reproduction of the experiments presented in the associated publication, please download the COCO and netCDF files from [this](https://www.dropbox.com/sh/mo02inemclhyeuy/AAAcNxHY75hb4c8oaxI-4Y_ba?dl=0) Dropbox folder. In the same folder you can also find the weights of the trained models.
 
 ### Requirements
 
