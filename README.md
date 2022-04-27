@@ -1,5 +1,4 @@
-## S4A Models
-#### Institute of Astronomy, Astrophysics, Space Applications and Remote Sensing (IAASARS), National Observatory of Athens (NOA)
+## Sen4AgriNet Models
 
 **Contributors:** [Sykas D.](https://github.com/dimsyk), [Zografakis D.](https://github.com/dimzog), [Sdraka M.](https://github.com/paren8esis)
 
