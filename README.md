@@ -21,7 +21,7 @@ Scenario | Train | Test
 
 The input of the PAD models is the median of each month of observations from April through September. The OAD models take as input the aggregated statistics of these observations.
 
-For a full reproduction of the experiments presented in the associated publication, please download the COCO and netCDF files from [this](https://www.dropbox.com/sh/mo02inemclhyeuy/AAAcNxHY75hb4c8oaxI-4Y_ba?dl=0) Dropbox folder. In the same folder you can also find the weights of the trained models.
+For a full reproduction of the experiments presented in the associated publication, please download the netCDF files from one of the following sources: [Dropbox](https://www.dropbox.com/scl/fo/ne0dpq72gi3ayhqj0hg60/h?dl=0&rlkey=b0148zl6yja7ph26bpfms6knt), [Google Drive](https://drive.google.com/drive/folders/1-qKhlaMUPPI7Th7xTE2vIXY2nIowrSiC?usp=sharing) or [HuggingFace Hub](https://huggingface.co/datasets/paren8esis/S4A) (_experimental_). In [this](https://www.dropbox.com/sh/kvgo4r2vin7sbwt/AACzDLNbnSouuZYMk8Y9I4sha?dl=0) Dropbox folder you can also find the COCO files and the weights of the trained models.
 
 ### Requirements
 
@@ -70,7 +70,7 @@ In the `coco_files/` folder are the COCO files required for training, validating
 
 #### NetCDF4 files
 
-In the `dataset/netcdf/` folder you should place the netCDF4 files downloaded from the provided [Dropbox](https://www.dropbox.com/sh/2arxz9d7fffg0xb/AADqlPtOoo4aCYAtmo2XzN5ta/netcdf?dl=0&subfolder_nav_tracking=1).
+In the `dataset/netcdf/` folder you should place the downloaded netCDF4 files.
 
 #### OAD files
 
