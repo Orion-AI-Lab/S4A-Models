@@ -22,7 +22,7 @@ class PADDataModule(pl.LightningDataModule):
 
     def __init__(
             self,
-            root_path_coco: Union[str, Path] = Path(),
+            netcdf_path: Union[str, Path] = Path(),
             path_train: Union[str, Path] = Path(),
             path_val: Union[str, Path] = Path(),
             path_test: Union[str, Path] = Path(),
@@ -52,11 +52,11 @@ class PADDataModule(pl.LightningDataModule):
         ----------
         root_path_coco: Path or str
             The path containing the COCO files.
-        path_train: Path or str, default Path('coco_train.json')
-            The file path containing the training data.
-        path_val: Path or str, default Path('coco_val.json')
+        netcdf_path: Path or str
+            The path containing the training data (netCDF files).
+        path_val: Path or str
             The file path containing the validation data.
-        path_test: Path or str, default Path('coco_test.json')
+        path_test: Path or str
             The file path containing the testing data.
         bands: list of str, default None
             A list of the bands to use. If None, then all available bands are
@@ -114,7 +114,7 @@ class PADDataModule(pl.LightningDataModule):
 
         super().__init__()
 
-        self.root_path_coco = root_path_coco
+        self.netcdf_path = netcdf_path
 
         self.path_train = Path(path_train)
         self.path_val = Path(path_val)
@@ -185,97 +185,103 @@ class PADDataModule(pl.LightningDataModule):
             coco_train = COCO(self.path_train)
             coco_val = COCO(self.path_val)
 
-            self.dataset_train = PADDataset(root_path_coco=self.root_path_coco,
-                                                coco=coco_train,
-                                                # transforms=transforms,
-                                                group_freq=self.group_freq,
-                                                compression=self.compression,
-                                                prefix=self.prefix,
-                                                bands=self.bands,
-                                                linear_encoder=self.linear_encoder,
-                                                saved_medians=self.saved_medians,
-                                                window_len=self.window_len,
-                                                fixed_window=self.fixed_window,
-                                                requires_norm=self.requires_norm,
-                                                return_masks=self.return_masks,
-                                                clouds=self.clouds,
-                                                cirrus=self.cirrus,
-                                                shadow=self.shadow,
-                                                snow=self.snow,
-                                                output_size=self.output_size,
-                                                binary_labels=self.binary_labels,
-                                                mode='train',
-                                                return_parcels=self.return_parcels
-                                                )
+            self.dataset_train = PADDataset(
+                root_path_netcdf=self.netcdf_path,
+                coco=coco_train,
+                # transforms=transforms,
+                group_freq=self.group_freq,
+                compression=self.compression,
+                prefix=self.prefix,
+                bands=self.bands,
+                linear_encoder=self.linear_encoder,
+                saved_medians=self.saved_medians,
+                window_len=self.window_len,
+                fixed_window=self.fixed_window,
+                requires_norm=self.requires_norm,
+                return_masks=self.return_masks,
+                clouds=self.clouds,
+                cirrus=self.cirrus,
+                shadow=self.shadow,
+                snow=self.snow,
+                output_size=self.output_size,
+                binary_labels=self.binary_labels,
+                mode='train',
+                return_parcels=self.return_parcels
+            )
 
-            self.dataset_eval = PADDataset(root_path_coco=self.root_path_coco,
-                                               coco=coco_val,
-                                               group_freq=self.group_freq,
-                                               compression=self.compression,
-                                               prefix=self.prefix,
-                                               bands=self.bands,
-                                               linear_encoder=self.linear_encoder,
-                                               saved_medians=self.saved_medians,
-                                               window_len=self.window_len,
-                                               fixed_window=self.fixed_window,
-                                               requires_norm=self.requires_norm,
-                                               return_masks=self.return_masks,
-                                               clouds=self.clouds,
-                                               cirrus=self.cirrus,
-                                               shadow=self.shadow,
-                                               snow=self.snow,
-                                               output_size=self.output_size,
-                                               binary_labels=self.binary_labels,
-                                               mode='val',
-                                               return_parcels=self.return_parcels
-                                               )
+            self.dataset_eval = PADDataset(
+                root_path_netcdf=self.netcdf_path,
+                coco=coco_val,
+                group_freq=self.group_freq,
+                compression=self.compression,
+                prefix=self.prefix,
+                bands=self.bands,
+                linear_encoder=self.linear_encoder,
+                saved_medians=self.saved_medians,
+                window_len=self.window_len,
+                fixed_window=self.fixed_window,
+                requires_norm=self.requires_norm,
+                return_masks=self.return_masks,
+                clouds=self.clouds,
+                cirrus=self.cirrus,
+                shadow=self.shadow,
+                snow=self.snow,
+                output_size=self.output_size,
+                binary_labels=self.binary_labels,
+                mode='val',
+                return_parcels=self.return_parcels
+        )
 
         else:
             # Setup datasets for testing
             coco_test = COCO(self.path_test)
 
-            self.dataset_test = PADDataset(root_path_coco=self.root_path_coco,
-                                               coco=coco_test,
-                                               group_freq=self.group_freq,
-                                               compression=self.compression,
-                                               prefix=self.prefix,
-                                               bands=self.bands,
-                                               linear_encoder=self.linear_encoder,
-                                               saved_medians=self.saved_medians,
-                                               window_len=self.window_len,
-                                               fixed_window=self.fixed_window,
-                                               requires_norm=self.requires_norm,
-                                               return_masks=self.return_masks,
-                                               clouds=self.clouds,
-                                               cirrus=self.cirrus,
-                                               shadow=self.shadow,
-                                               snow=self.snow,
-                                               output_size=self.output_size,
-                                               binary_labels=self.binary_labels,
-                                               mode='test',
-                                               return_parcels=self.return_parcels
-                                               )
+            self.dataset_test = PADDataset(
+                root_path_netcdf=self.netcdf_path,
+                coco=coco_test,
+                group_freq=self.group_freq,
+                compression=self.compression,
+                prefix=self.prefix,
+                bands=self.bands,
+                linear_encoder=self.linear_encoder,
+                saved_medians=self.saved_medians,
+                window_len=self.window_len,
+                fixed_window=self.fixed_window,
+                requires_norm=self.requires_norm,
+                return_masks=self.return_masks,
+                clouds=self.clouds,
+                cirrus=self.cirrus,
+                shadow=self.shadow,
+                snow=self.snow,
+                output_size=self.output_size,
+                binary_labels=self.binary_labels,
+                mode='test',
+                return_parcels=self.return_parcels
+            )
 
     def train_dataloader(self):
-        return DataLoader(self.dataset_train,
-                          batch_size=self.batch_size,
-                          shuffle=True,
-                          num_workers=self.num_workers,
-                          pin_memory=True
-                          )
+        return DataLoader(
+            self.dataset_train,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
+            pin_memory=True
+        )
 
     def val_dataloader(self):
-        return DataLoader(self.dataset_eval,
-                          batch_size=self.batch_size,
-                          shuffle=False,
-                          num_workers=self.num_workers,
-                          pin_memory=True
-                          )
+        return DataLoader(
+            self.dataset_eval,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers,
+            pin_memory=True
+        )
 
     def test_dataloader(self):
-        return DataLoader(self.dataset_test,
-                          batch_size=self.batch_size,
-                          shuffle=False,
-                          num_workers=self.num_workers,
-                          pin_memory=True
-                          )
+        return DataLoader(
+            self.dataset_test,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers,
+            pin_memory=True
+        )

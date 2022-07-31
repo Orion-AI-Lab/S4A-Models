@@ -269,6 +269,7 @@ class PADDataset(Dataset):
 
         return pad_top, pad_bot, pad_left, pad_right
 
+
     def get_medians(self, netcdf: netCDF4.Dataset, start_bin: int, window: int) -> np.ndarray:
         """
         netcdf (.nc): NETCDF4 Dataset.
