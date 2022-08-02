@@ -50,14 +50,14 @@ class PADDataModule(pl.LightningDataModule):
         '''
         Parameters
         ----------
-        root_path_coco: Path or str
-            The path containing the COCO files.
         netcdf_path: Path or str
             The path containing the training data (netCDF files).
+        path_train: Path or str
+            The COCO file path containing the training data.
         path_val: Path or str
-            The file path containing the validation data.
+            The COCO file path containing the validation data.
         path_test: Path or str
-            The file path containing the testing data.
+            The COCO file path containing the testing data.
         bands: list of str, default None
             A list of the bands to use. If None, then all available bands are
             taken into consideration. Note that the bands are given in a two-digit

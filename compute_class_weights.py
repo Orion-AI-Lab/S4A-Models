@@ -18,6 +18,8 @@ if __name__ == '__main__':
                         help='Prefix of the COCO file. Default "exp1_patches2000_strat".')
     parser.add_argument('--medians_prefix', type=str, default='exp1_patches2000_strat_61x61', required=False,
                         help='Prefix of the medians directory. Default "exp1_patches2000_strat_61x61".')
+    parser.add_argument('--netcdf_path', type=str, default='dataset/netcdf',
+                        help='The path containing the netcdf files. Default "dataset/netcdf".')
     parser.add_argument('--out_prefix', type=str, required=False,
                         help='The prefix to use for the class weights file. Default none.')
     parser.add_argument('--ignore_zero', default=False, action='store_true', required=False,
@@ -30,6 +32,7 @@ if __name__ == '__main__':
     root_path_coco = Path(args.coco_path)
     coco_train = root_path_coco / f'{args.coco_prefix}_coco_train.json'
     coco_val = root_path_coco / f'{args.coco_prefix}_coco_val.json'
+    netcdf_path = Path(args.netcdf_path)
 
     if args.out_prefix is not None:
         out_name = f'{args.out_prefix}_class_weights.pkl'
@@ -46,7 +49,7 @@ if __name__ == '__main__':
     else:
         # Create Data Module
         dm = PADDataModule(
-            root_path_coco=root_path_coco,
+            netcdf_path=netcdf_path,
             path_train=coco_train,
             path_val=coco_val,
             group_freq='1MS',
