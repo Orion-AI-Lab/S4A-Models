@@ -131,6 +131,9 @@ def main():
     parser.add_argument('--prefix_coco', type=str, default=None, required=False,
                              help='The prefix to use for the COCO file. Default none.')
 
+    parser.add_argument('--netcdf_path', type=str, default='dataset/netcdf',
+                        help='The path containing the netcdf files. Default "dataset/netcdf".')
+
     parser.add_argument('--prefix', type=str, default=None, required=False,
                              help='The prefix to use for dumping data files. If none, the current timestamp is used')
 
@@ -195,6 +198,8 @@ def main():
 
     # Normalize paths for different OSes
     root_path_coco = Path(args.root_path_coco)
+
+    netcdf_path = Path(args.netcdf_path)
 
     # Check existence of data folder
     if not root_path_coco.is_dir():
@@ -387,7 +392,7 @@ def main():
     if args.train:
         # Create Data Modules
         dm = PADDataModule(
-            root_path_coco=root_path_coco,
+            netcdf_path=netcdf_path,
             path_train=path_train,
             path_val=path_val,
             group_freq=args.group_freq,
@@ -453,7 +458,7 @@ def main():
     else:
         # Create Data Module
         dm = PADDataModule(
-            root_path_coco=root_path_coco,
+            netcdf_path=netcdf_path,
             path_test=path_test,
             group_freq=args.group_freq,
             prefix=prefix,

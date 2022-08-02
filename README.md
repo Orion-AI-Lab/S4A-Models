@@ -104,7 +104,7 @@ Every script inherits settings from the aforementioned files.
 **For PAD:**
 1. Run `pad_experiments.py` with the appropriate arguments. Example:
    ```
-   python pad_experiments.py --train --model convlstm --parcel_loss --weighted_loss --root_path_coco <coco_folder_path> --prefix_coco <coco_file_prefix> --prefix <run_prefix> --num_epochs 10 --batch_size 32 --bands B02 B03 B04 B08 --saved_medians --img_size 61 61 --requires_norm --num_workers 16 --num_gpus 1 --fixed_window
+   python pad_experiments.py --train --model convlstm --parcel_loss --weighted_loss --root_path_coco <coco_folder_path> --prefix_coco <coco_file_prefix> --netcdf_path <netcdf_folder_path> --prefix <run_prefix> --num_epochs 10 --batch_size 32 --bands B02 B03 B04 B08 --saved_medians --img_size 61 61 --requires_norm --num_workers 16 --num_gpus 1 --fixed_window
    ```
    The above command is for training the **ConvLSTM** model using the **weighted parcel loss** described in the associated publication. Training will continue for **10 epochs** with **batch size 32**, using the Sentinel-2 **bands Blue (B02), Green (B03), Red (B04) and NIR (B08)**. The **input image size is 61x61**, the **precomputed medians are used** to speed up training and all input data are **normalized**. Finally, a **fixed window** is used containing months 4 (April) through 9 (September). Please use the `--help` argument to find information on all available parameters.
 2. Optionally, after training run `visualize_predictions.py` to visualize the image, ground truth and prediction for a specific model and image.

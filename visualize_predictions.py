@@ -60,6 +60,9 @@ if __name__ == '__main__':
     parser.add_argument('--prefix_coco', type=str, default=None, required=False,
                              help='The prefix to use for the COCO file. Default none.')
 
+    parser.add_argument('--netcdf_path', type=str, default='dataset/netcdf',
+                        help='The path containing the netcdf files. Default "dataset/netcdf".')
+
     parser.add_argument('--prefix', type=str, default=None, required=False,
                              help='The prefix to use for dumping data files. If none, the current timestamp is used')
 
@@ -117,6 +120,7 @@ if __name__ == '__main__':
 
     # Normalize paths for different OSes
     root_path_coco = Path(args.root_path_coco)
+    netcdf_path = Path(netcdf_path)
 
     # Check existence of data folder
     if not root_path_coco.is_dir():
@@ -175,7 +179,7 @@ if __name__ == '__main__':
 
     # Create Data Module for testing images
     dm = PADDataModule(
-        root_path_coco=root_path_coco,
+        netcdf_path=netcdf_path,
         path_test=path_test,
         group_freq=args.group_freq,
         prefix=args.prefix,
