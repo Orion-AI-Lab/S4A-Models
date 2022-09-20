@@ -49,8 +49,8 @@ if __name__ == '__main__':
     parser.add_argument('--image_idx', nargs='+', required=False,
                             help='A list of indices of the image batches to evaluate on. If not given, a random one is chosen.')
 
-    parser.add_argument('--parcel_loss', action='store_true', default=False, required=False,
-                            help='Use a loss function that takes into account parcel pixels only.')
+    parser.add_argument('--mask_parcels', action='store_true', default=False, required=False,
+                            help='Mask non-parcel pixels, i.e. predictions for non-parcel pixels will be discarded.')
 
     parser.add_argument('--binary_labels', action='store_true', default=False, required=False,
                              help='Map categories to 0 background, 1 parcel. Default False')
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
     # Normalize paths for different OSes
     root_path_coco = Path(args.root_path_coco)
-    netcdf_path = Path(netcdf_path)
+    netcdf_path = Path(args.netcdf_path)
 
     # Check existence of data folder
     if not root_path_coco.is_dir():
@@ -128,6 +128,7 @@ if __name__ == '__main__':
         exit(1)
 
     run_path = Path(*Path(args.load_checkpoint).parts[:-2])
+    print(f'Exporting to: {run_path}')
 
     if args.binary_labels:
         n_classes = 2
@@ -137,7 +138,7 @@ if __name__ == '__main__':
     if args.model == 'convlstm':
         args.img_size = [int(dim) for dim in args.img_size]
 
-        model = ConvLSTM(run_path, LINEAR_ENCODER, parcel_loss=args.parcel_loss)
+        model = ConvLSTM(run_path, LINEAR_ENCODER, parcel_loss=args.mask_parcels)
 
         # Load the model for testing
         checkpoint_epoch = Path(args.load_checkpoint).stem.split('=')[1].split('-')[0]
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     elif args.model == 'convstar':
         args.img_size = [int(dim) for dim in args.img_size]
 
-        model = ConvSTAR(run_path, LINEAR_ENCODER, parcel_loss=args.parcel_loss)
+        model = ConvSTAR(run_path, LINEAR_ENCODER, parcel_loss=args.mask_parcels)
 
         # Load the model for testing
         checkpoint_epoch = Path(args.load_checkpoint).stem.split('=')[1].split('-')[0]
@@ -161,7 +162,7 @@ if __name__ == '__main__':
     elif args.model == 'unet':
         args.img_size = [int(dim) for dim in args.img_size]
 
-        model = UNet(run_path, LINEAR_ENCODER, parcel_loss=args.parcel_loss, num_layers=3)
+        model = UNet(run_path, LINEAR_ENCODER, parcel_loss=args.mask_parcels, num_layers=3)
 
         # Load the model for testing
         checkpoint_epoch = Path(args.load_checkpoint).stem.split('=')[1].split('-')[0]
@@ -198,7 +199,7 @@ if __name__ == '__main__':
         batch_size=1,
         num_workers=args.num_workers,
         binary_labels=args.binary_labels,
-        return_parcels=args.parcel_loss
+        return_parcels=args.mask_parcels
     )
 
     # TRAINING
@@ -246,14 +247,17 @@ if __name__ == '__main__':
 
             pred = pred.to(torch.float32)
 
-            parcels = torch.from_numpy(batch['parcels'])[None, :, :].cuda()  # (B, H, W)
-            parcels_K = parcels[:, None, :, :].repeat(1, pred.size(1), 1, 1)  # (B, K, H, W)
-            #pred = torch.clamp(pred, 0, max(LINEAR_ENCODER.values()))
+            if args.mask_parcels:
+                parcels = torch.from_numpy(batch['parcels'])[None, :, :].cuda()  # (B, H, W)
+                parcels_K = parcels[:, None, :, :].repeat(1, pred.size(1), 1, 1)  # (B, K, H, W)
+                #pred = torch.clamp(pred, 0, max(LINEAR_ENCODER.values()))
 
-            label = torch.from_numpy(batch['labels'][None, :, :]).to(torch.long).cuda()  # (B, H, W)
+                label = torch.from_numpy(batch['labels'][None, :, :]).to(torch.long).cuda()  # (B, H, W)
 
-            mask_K = (parcels_K) & (label[:, None, :, :].repeat(1, pred.size(1), 1, 1) != 0)
-            pred[~mask_K] = 0
+                mask_K = (parcels_K) & (label[:, None, :, :].repeat(1, pred.size(1), 1, 1) != 0)
+                pred[~mask_K] = 0
+            else:
+                label = torch.from_numpy(batch['labels'][None, :, :]).to(torch.long).cuda()  # (B, H, W)
 
             pred_sparse = pred.argmax(axis=1).squeeze().cpu().detach().numpy()
 
