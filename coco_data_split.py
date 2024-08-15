@@ -162,9 +162,22 @@ if __name__ == '__main__':
 
         common_lbls = common_labels(train_tiles | test_tiles)
 
-    # Correct bugs
+    # If common_lbls is an empty set, it is expected to equal None later
     if common_lbls is not None and len(common_lbls) == 0:
         common_lbls = None
+
+    # If args.tiles is 'all', then train_tiles and test_tiles is also expected
+    # to be 'all'
+    if args.tiles == 'all':
+        train_tiles = 'all'
+        test_tiles = 'all'
+
+    # If args.years is 'all', then train_years and test_years is also expected
+    # to be 'all'
+    if args.years == 'all':
+        train_years = 'all'
+        test_years = 'all'
+
     # Define prefix
     if args.prefix is None:
         # No prefix given, use current timestamp
