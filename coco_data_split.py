@@ -37,7 +37,7 @@ netCDF4.default_encoding = 'utf-8'
 
 
 def plot_label_frequencies(coco, data_path, title, ax, labels_common=None):
-    if labels_common is not None:
+    if len(labels_common) > 0:
         label_freqs = {l: 0 for l in labels_common}
     else:
         label_freqs = {l: 0 for l in CROP_ENCODING.values()}
@@ -162,6 +162,9 @@ if __name__ == '__main__':
 
         common_lbls = common_labels(train_tiles | test_tiles)
 
+    # Correct bugs
+    if common_lbls is not None and len(common_lbls) == 0:
+        common_lbls = None
     # Define prefix
     if args.prefix is None:
         # No prefix given, use current timestamp
